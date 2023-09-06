@@ -7,9 +7,13 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class Window extends Application {
@@ -87,19 +91,22 @@ public class Window extends Application {
     public void start(Stage stage) {
         stage.setTitle("Hello World!");
 
-        Button btn = new Button();
-        btn.textProperty().bind(id);
+        Button btn = new Button("Start Connection");
 
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                sendMessage("test message");
-            }
-        });
+        Label label = new Label();
+        label.textProperty().bind(id);
 
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
-        stage.setScene(new Scene(root, 300, 250));
+        btn.setOnAction(event -> sendMessage("test message"));
+
+        BorderPane root = new BorderPane();
+        VBox vBox = new VBox(10); // Add some vertical spacing
+        vBox.setAlignment(Pos.CENTER); // Center contents vertically
+        vBox.getChildren().addAll(label, btn);
+
+        root.setCenter(vBox);
+
+        Scene scene = new Scene(root, 300, 250);
+        stage.setScene(scene);
         stage.show();
 
         initializeConnection();
