@@ -48,25 +48,6 @@ public class Window extends Application {
         }).start();
     }
 
-    public void handleMessage(String messageType, String messageContent) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                switch (messageType) {
-                    case "i":
-                        id.set(messageContent);
-                        break;
-                    case "e":
-                        errorLabel.set(messageContent);
-                        break;
-                    default:
-                        System.out.println("unknown message type: " + messageType);
-                }
-
-            }
-        });
-    }
-
     public String readNextMessage() {
         try {
             InputStream in = socket.getInputStream();
@@ -84,6 +65,24 @@ public class Window extends Application {
         } catch (IOException e) {
             return null;
         }
+    }
+
+    public void handleMessage(String messageType, String messageContent) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                switch (messageType) {
+                    case "i":
+                        id.set(messageContent);
+                        break;
+                    case "e":
+                        errorLabel.set(messageContent);
+                        break;
+                    default:
+                        System.out.println("unknown message type: " + messageType);
+                }
+            }
+        });
     }
 
     public void sendMessage(String message) {
