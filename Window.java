@@ -36,7 +36,7 @@ public class Window extends Application {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (socket != null) {
+                while (socket.isConnected()) {
                     String message = readNextMessage();
                     if (message == null) {
                         break;
@@ -138,7 +138,6 @@ public class Window extends Application {
         if (socket != null) {
             try {
                 socket.close();
-                socket = null;
             } catch (IOException e) {
                 e.printStackTrace();
             }
