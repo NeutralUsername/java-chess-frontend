@@ -21,6 +21,7 @@ public class Window extends Application {
         try {
             socket = new Socket("localhost", 4711);
             System.out.println("connection established with " + socket.getInetAddress());
+            listenForMessages();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -84,8 +85,6 @@ public class Window extends Application {
 
     @Override
     public void start(Stage stage) {
-        initializeConnection();
-
         stage.setTitle("Hello World!");
 
         Button btn = new Button();
@@ -103,7 +102,7 @@ public class Window extends Application {
         stage.setScene(new Scene(root, 300, 250));
         stage.show();
 
-        listenForMessages();
+        initializeConnection();
     }
 
     @Override
