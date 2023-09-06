@@ -27,25 +27,24 @@ public class Window extends Application {
         }
     }
 
-  public void listenForMessages() {
-    new Thread(new Runnable() {
-        @Override
-        public void run() {
-            while (true) {
-                String message = receiveMessage();
-                if (message != null) {
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            mostRecentMessage.set(message);
-                        }
-                    });
+    public void listenForMessages() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    String message = receiveMessage();
+                    if (message != null) {
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                mostRecentMessage.set(message);
+                            }
+                        });
+                    }
                 }
             }
-        }
-    }).start();
-}
-
+        }).start();
+    }
 
     public String receiveMessage() {
         try {
@@ -76,6 +75,14 @@ public class Window extends Application {
         }
     }
 
+    public void sendMessage(String message) {
+        try {
+            client.getOutputStream().write(message.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void start(Stage stage) {
         initializeConnection();
@@ -86,10 +93,9 @@ public class Window extends Application {
         btn.textProperty().bind(mostRecentMessage);
 
         btn.setOnAction(new EventHandler<ActionEvent>() {
-
             @Override
             public void handle(ActionEvent event) {
-                System.out.println(mostRecentMessage);
+                sendMessage("test message");
             }
         });
 
@@ -99,5 +105,11 @@ public class Window extends Application {
         stage.show();
 
         listenForMessages();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        closeConnection(); // Close the connection when the application exits
+        super.stop();
     }
 }
