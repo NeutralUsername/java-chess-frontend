@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 public class Window extends Application {
 
     private Socket socket;
-    private StringProperty mostRecentMessage = new SimpleStringProperty("test");
+    private SimpleStringProperty id =  new SimpleStringProperty("");
 
     public void initializeConnection() {
         try {
@@ -37,7 +37,15 @@ public class Window extends Application {
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
-                                mostRecentMessage.set(message);
+                                String messageType = message.substring(0, 1);
+                                String messageContent = message.substring(1);
+                                switch (messageType) {
+                                    case "i":
+                                        id.set(messageContent);
+                                        break;
+                                    default:
+                                        System.out.println("unknown message type: " + messageType);
+                                }
                             }
                         });
                     }
@@ -83,7 +91,7 @@ public class Window extends Application {
         stage.setTitle("Hello World!");
 
         Button btn = new Button();
-        btn.textProperty().bind(mostRecentMessage);
+        btn.textProperty().bind(id);
 
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
