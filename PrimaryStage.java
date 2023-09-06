@@ -12,24 +12,28 @@ import javafx.stage.Stage;
 
 public class PrimaryStage extends Application {
 
-    @Override
-    public void start(Stage primaryStage) {
+    private Socket client;
+
+    public void initializeConnection() {
         try {
-            Socket client = new Socket("localhost", 4711);
-            System.out.println("Client: connected to " +
-                    client.getInetAddress());
+            client = new Socket("localhost", 4711);
+            System.out.println("Client: connected to " + client.getInetAddress());
             InputStream in = client.getInputStream();
             byte b[] = new byte[100];
             int bytes = in.read(b);
             System.out.println("Client: recieved " + bytes + " Bytes from Server");
             String message = new String(b);
-            System.out.println("Client: Message from Server: " +
-                    message);
+            System.out.println("Client: Message from Server: " + message);
             client.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        initializeConnection();
+
         primaryStage.setTitle("Hello World!");
         Button btn = new Button();
         btn.setText("Say 'Hello World'");
