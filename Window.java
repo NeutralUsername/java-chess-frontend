@@ -88,12 +88,13 @@ public class Window extends Application {
 
     @Override
     public void start(Stage stage) {
-        stage.setTitle("Hello World!");
+        stage.setTitle("game");
 
         Label label = new Label();
         label.textProperty().bind(id);
 
         TextField textField = new TextField();
+        textField.setMaxWidth(150);
         textField.textProperty().bindBidirectional(textFieldInput);
 
         Button btn = new Button("Start Connection");
@@ -101,8 +102,8 @@ public class Window extends Application {
         btn.setOnAction(event -> sendMessage(textFieldInput.get()));
 
         BorderPane root = new BorderPane();
-        VBox vBox = new VBox(10); // Add some vertical spacing
-        vBox.setAlignment(Pos.CENTER); // Center contents vertically
+        VBox vBox = new VBox(10); 
+        vBox.setAlignment(Pos.CENTER); 
         vBox.getChildren().addAll(label, textField, btn);
 
         root.setCenter(vBox);
