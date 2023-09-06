@@ -3,6 +3,9 @@ import java.io.InputStream;
 import java.net.Socket;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -13,32 +16,37 @@ import javafx.stage.Stage;
 public class Window extends Application {
 
     private Socket client;
+    private StringProperty mostRecentMessage = new SimpleStringProperty("test");
 
     public void initializeConnection() {
         try {
             client = new Socket("localhost", 4711);
-
             System.out.println("connection established with " + client.getInetAddress());
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void listenForMessages() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    String message = receiveMessage();
-                    if (message != null) {
-                        System.out.println("received message: " + message);
-                    }
+  public void listenForMessages() {
+    new Thread(new Runnable() {
+        @Override
+        public void run() {
+            while (true) {
+                String message = receiveMessage();
+                if (message != null) {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            mostRecentMessage.set(message);
+                        }
+                    });
                 }
             }
-        }).start();
-    }
-    
+        }
+    }).start();
+}
+
+
     public String receiveMessage() {
         try {
             while (client.getInputStream().available() == 0) {
@@ -73,13 +81,15 @@ public class Window extends Application {
         initializeConnection();
 
         stage.setTitle("Hello World!");
+
         Button btn = new Button();
-        btn.setText("Say 'Hello World'");
+        btn.textProperty().bind(mostRecentMessage);
+
         btn.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
+                System.out.println(mostRecentMessage);
             }
         });
 
