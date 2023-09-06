@@ -5,14 +5,12 @@ import java.net.Socket;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -20,6 +18,7 @@ public class Window extends Application {
 
     private Socket socket;
     private SimpleStringProperty id = new SimpleStringProperty("");
+    private SimpleStringProperty textFieldInput = new SimpleStringProperty("");
 
     public void initializeConnection() {
         try {
@@ -91,17 +90,20 @@ public class Window extends Application {
     public void start(Stage stage) {
         stage.setTitle("Hello World!");
 
-        Button btn = new Button("Start Connection");
-
         Label label = new Label();
         label.textProperty().bind(id);
 
-        btn.setOnAction(event -> sendMessage("test message"));
+        TextField textField = new TextField();
+        textField.textProperty().bindBidirectional(textFieldInput);
+
+        Button btn = new Button("Start Connection");
+
+        btn.setOnAction(event -> sendMessage(textFieldInput.get()));
 
         BorderPane root = new BorderPane();
         VBox vBox = new VBox(10); // Add some vertical spacing
         vBox.setAlignment(Pos.CENTER); // Center contents vertically
-        vBox.getChildren().addAll(label, btn);
+        vBox.getChildren().addAll(label, textField, btn);
 
         root.setCenter(vBox);
 
