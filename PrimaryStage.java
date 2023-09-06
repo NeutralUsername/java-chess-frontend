@@ -31,10 +31,10 @@ public class PrimaryStage extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage stage) {
         initializeConnection();
 
-        primaryStage.setTitle("Hello World!");
+        stage.setTitle("Hello World!");
         Button btn = new Button();
         btn.setText("Say 'Hello World'");
         btn.setOnAction(new EventHandler<ActionEvent>() {
@@ -47,7 +47,7 @@ public class PrimaryStage extends Application {
 
         StackPane root = new StackPane();
         root.getChildren().add(btn);
-        primaryStage.setScene(new Scene(root, 300, 250));
-        primaryStage.show();
+        stage.setScene(new Scene(root, 300, 250));
+        stage.show();
     }
 }
