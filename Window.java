@@ -17,17 +17,37 @@ public class Window extends Application {
     public void initializeConnection() {
         try {
             client = new Socket("localhost", 4711);
-            System.out.println("connection established with " + client.getInetAddress());
-            System.out.println(receiveMessage());
 
-            closeConnection();
+            System.out.println("connection established with " + client.getInetAddress());
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    public void listenForMessages() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    String message = receiveMessage();
+                    if (message != null) {
+                        System.out.println("received message: " + message);
+                    }
+                }
+            }
+        }).start();
+    }
+    
     public String receiveMessage() {
         try {
+            while (client.getInputStream().available() == 0) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             InputStream in = client.getInputStream();
             byte b[] = new byte[100];
             in.read(b);
@@ -67,5 +87,7 @@ public class Window extends Application {
         root.getChildren().add(btn);
         stage.setScene(new Scene(root, 300, 250));
         stage.show();
+
+        listenForMessages();
     }
 }
