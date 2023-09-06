@@ -45,23 +45,25 @@ public class Window extends Application {
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
-                            String messageType = message.substring(0, 1);
-                            String messageContent = message.substring(1);
-                            switch (messageType) {
-                                case "i":
-                                    id.set(messageContent);
-                                    break;
-                                case "e":
-                                    errorLabel.set(messageContent);
-                                    break;
-                                default:
-                                    System.out.println("unknown message type: " + messageType);
-                            }
+                            handleMessage(message.substring(0, 1), message.substring(1));
                         }
                     });
                 }
             }
         }).start();
+    }
+
+    public void handleMessage(String messageType, String messageContent) {
+        switch (messageType) {
+            case "i":
+                id.set(messageContent);
+                break;
+            case "e":
+                errorLabel.set(messageContent);
+                break;
+            default:
+                System.out.println("unknown message type: " + messageType);
+        }
     }
 
     public String handleNextMessage() {
