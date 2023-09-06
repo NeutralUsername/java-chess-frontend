@@ -17,6 +17,7 @@ public class Window extends Application {
 
     private Socket client;
     private StringProperty mostRecentMessage = new SimpleStringProperty("test");
+    private boolean closed = false;
 
     public void initializeConnection() {
         try {
@@ -31,7 +32,7 @@ public class Window extends Application {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true) {
+                while (!closed) {
                     String message = receiveMessage();
                     if (message != null) {
                         Platform.runLater(new Runnable() {
@@ -54,6 +55,9 @@ public class Window extends Application {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                if (closed) {
+                    return null;
+                }
             }
             InputStream in = client.getInputStream();
             byte b[] = new byte[100];
@@ -62,16 +66,6 @@ public class Window extends Application {
         } catch (IOException e) {
             e.printStackTrace();
             return null;
-        }
-    }
-
-    public void closeConnection() {
-        if (client != null) {
-            try {
-                client.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -109,7 +103,14 @@ public class Window extends Application {
 
     @Override
     public void stop() throws Exception {
-        closeConnection(); // Close the connection when the application exits
+        if (client != null) {
+            try {
+                client.close();
+                closed = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         super.stop();
     }
 }
