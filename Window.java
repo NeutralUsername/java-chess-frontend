@@ -10,7 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-public class PrimaryStage extends Application {
+public class Window extends Application {
 
     private Socket client;
 
