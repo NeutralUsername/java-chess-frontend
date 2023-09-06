@@ -19,6 +19,7 @@ public class Window extends Application {
     private Socket socket;
     private SimpleStringProperty id = new SimpleStringProperty("");
     private SimpleStringProperty textFieldInput = new SimpleStringProperty("");
+    private SimpleStringProperty errorLabel = new SimpleStringProperty("");
 
     public void initializeConnection() {
         try {
@@ -48,6 +49,9 @@ public class Window extends Application {
                             switch (messageType) {
                                 case "i":
                                     id.set(messageContent);
+                                    break;
+                                case "e":
+                                    errorLabel.set(messageContent);
                                     break;
                                 default:
                                     System.out.println("unknown message type: " + messageType);
@@ -90,23 +94,33 @@ public class Window extends Application {
     public void start(Stage stage) {
         stage.setTitle("game");
 
-        Label label = new Label();
-        label.textProperty().bind(id);
+        Label idLabel = new Label();
+        idLabel.textProperty().bind(id);
 
         TextField textField = new TextField();
         textField.setMaxWidth(150);
         textField.textProperty().bindBidirectional(textFieldInput);
+        textFieldInput.addListener((observable, oldValue, newValue) -> {
+            this.errorLabel.set("");
+        });
 
         Button btn = new Button("Start Connection");
 
-        btn.setOnAction(event -> sendMessage(textFieldInput.get()));
+        Label errorLabel = new Label();
+        errorLabel.textProperty().bind(this.errorLabel);
+
+        btn.setOnAction(event -> {
+            sendMessage(textFieldInput.get());
+            this.errorLabel.set("");
+        });
 
         BorderPane root = new BorderPane();
-        VBox vBox = new VBox(10); 
-        vBox.setAlignment(Pos.CENTER); 
-        vBox.getChildren().addAll(label, textField, btn);
+        VBox vBox = new VBox(10);
+        vBox.setAlignment(Pos.CENTER);
+        vBox.getChildren().addAll(idLabel, textField, btn);
 
         root.setCenter(vBox);
+        root.setBottom(errorLabel);
 
         Scene scene = new Scene(root, 300, 250);
         stage.setScene(scene);
