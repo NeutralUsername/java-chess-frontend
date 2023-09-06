@@ -5,7 +5,6 @@ import java.net.Socket;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -16,7 +15,7 @@ import javafx.stage.Stage;
 public class Window extends Application {
 
     private Socket socket;
-    private SimpleStringProperty id =  new SimpleStringProperty("");
+    private SimpleStringProperty id = new SimpleStringProperty("");
 
     public void initializeConnection() {
         try {
@@ -32,46 +31,45 @@ public class Window extends Application {
             @Override
             public void run() {
                 while (socket != null) {
-                    String message = receiveMessage();
-                    if (message != null) {
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                String messageType = message.substring(0, 1);
-                                String messageContent = message.substring(1);
-                                switch (messageType) {
-                                    case "i":
-                                        id.set(messageContent);
-                                        break;
-                                    default:
-                                        System.out.println("unknown message type: " + messageType);
-                                }
-                            }
-                        });
+                    String message = handleNextMessage();
+                    if (message == null) {
+                        System.out.println("connection closed");
+                        break;
                     }
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            String messageType = message.substring(0, 1);
+                            String messageContent = message.substring(1);
+                            switch (messageType) {
+                                case "i":
+                                    id.set(messageContent);
+                                    break;
+                                default:
+                                    System.out.println("unknown message type: " + messageType);
+                            }
+                        }
+                    });
                 }
             }
         }).start();
     }
 
-    public String receiveMessage() {
+    public String handleNextMessage() {
         try {
-            while (socket.getInputStream().available() == 0) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if (socket == null) {
+            InputStream in = socket.getInputStream();
+            String message = "";
+            do {
+                int byt = in.read();
+                if (byt == -1) {
                     return null;
                 }
-            }
-            InputStream in = socket.getInputStream();
-            byte b[] = new byte[100];
-            in.read(b);
-            return new String(b);
+                message += (char) byt;
+
+            } while (in.available() > 0);
+            return message;
+
         } catch (IOException e) {
-            e.printStackTrace();
             return null;
         }
     }
