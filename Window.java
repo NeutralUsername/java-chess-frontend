@@ -15,13 +15,13 @@ import javafx.stage.Stage;
 
 public class Window extends Application {
 
-    private Socket client;
+    private Socket socket;
     private StringProperty mostRecentMessage = new SimpleStringProperty("test");
 
     public void initializeConnection() {
         try {
-            client = new Socket("localhost", 4711);
-            System.out.println("connection established with " + client.getInetAddress());
+            socket = new Socket("localhost", 4711);
+            System.out.println("connection established with " + socket.getInetAddress());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -31,7 +31,7 @@ public class Window extends Application {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (client != null) {
+                while (socket != null) {
                     String message = receiveMessage();
                     if (message != null) {
                         Platform.runLater(new Runnable() {
@@ -48,17 +48,17 @@ public class Window extends Application {
 
     public String receiveMessage() {
         try {
-            while (client.getInputStream().available() == 0) {
+            while (socket.getInputStream().available() == 0) {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if (client == null) {
+                if (socket == null) {
                     return null;
                 }
             }
-            InputStream in = client.getInputStream();
+            InputStream in = socket.getInputStream();
             byte b[] = new byte[100];
             in.read(b);
             return new String(b);
@@ -70,7 +70,7 @@ public class Window extends Application {
 
     public void sendMessage(String message) {
         try {
-            client.getOutputStream().write(message.getBytes());
+            socket.getOutputStream().write(message.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -102,10 +102,10 @@ public class Window extends Application {
 
     @Override
     public void stop() throws Exception {
-        if (client != null) {
+        if (socket != null) {
             try {
-                client.close();
-                client = null;
+                socket.close();
+                socket = null;
             } catch (IOException e) {
                 e.printStackTrace();
             }
