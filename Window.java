@@ -27,6 +27,7 @@ public class Window extends Application {
             System.out.println("connection established with " + socket.getInetAddress());
             listenForMessages();
         } catch (IOException e) {
+            System.out.println("connection failed");
             Platform.exit();
         }
     }
@@ -38,12 +39,12 @@ public class Window extends Application {
                 while (socket != null) {
                     String message = readNextMessage();
                     if (message == null) {
-                        System.out.println("connection closed");
-                        Platform.exit();
                         break;
                     }
                     handleMessage(message.substring(0, 1), message.substring(1));
                 }
+                System.out.println("connection closed");
+                Platform.exit();
             }
         }).start();
     }
@@ -113,7 +114,7 @@ public class Window extends Application {
         errorLabel.textProperty().bind(this.errorLabel);
 
         btn.setOnAction(event -> {
-            sendMessage(textFieldInput.get());
+            sendMessage("c" + textFieldInput.get());
             this.errorLabel.set("");
         });
 
