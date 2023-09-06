@@ -27,7 +27,7 @@ public class Window extends Application {
             System.out.println("connection established with " + socket.getInetAddress());
             listenForMessages();
         } catch (IOException e) {
-            e.printStackTrace();
+            Platform.exit();
         }
     }
 
@@ -39,6 +39,7 @@ public class Window extends Application {
                     String message = handleNextMessage();
                     if (message == null) {
                         System.out.println("connection closed");
+                        Platform.exit();
                         break;
                     }
                     Platform.runLater(new Runnable() {
