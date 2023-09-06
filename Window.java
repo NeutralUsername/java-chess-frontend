@@ -107,7 +107,7 @@ public class Window extends Application {
             this.errorLabel.set("");
         });
 
-        Button btn = new Button("Start Connection");
+        Button btn = new Button("start game");
 
         Label errorLabel = new Label();
         errorLabel.textProperty().bind(this.errorLabel);
