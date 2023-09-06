@@ -17,16 +17,34 @@ public class Window extends Application {
     public void initializeConnection() {
         try {
             client = new Socket("localhost", 4711);
-            System.out.println("Client: connected to " + client.getInetAddress());
-            InputStream in = client.getInputStream();
-            byte b[] = new byte[100];
-            int bytes = in.read(b);
-            System.out.println("Client: recieved " + bytes + " Bytes from Server");
-            String message = new String(b);
-            System.out.println("Client: Message from Server: " + message);
-            client.close();
+            System.out.println("connection established with " + client.getInetAddress());
+            System.out.println(receiveMessage());
+
+            closeConnection();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public String receiveMessage() {
+        try {
+            InputStream in = client.getInputStream();
+            byte b[] = new byte[100];
+            in.read(b);
+            return new String(b);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void closeConnection() {
+        if (client != null) {
+            try {
+                client.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
