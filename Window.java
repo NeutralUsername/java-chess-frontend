@@ -36,7 +36,7 @@ public class Window extends Application {
             @Override
             public void run() {
                 while (socket != null) {
-                    String message = handleNextMessage();
+                    String message = readNextMessage();
                     if (message == null) {
                         System.out.println("connection closed");
                         Platform.exit();
@@ -67,7 +67,7 @@ public class Window extends Application {
         });
     }
 
-    public String handleNextMessage() {
+    public String readNextMessage() {
         try {
             InputStream in = socket.getInputStream();
             String message = "";
