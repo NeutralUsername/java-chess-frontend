@@ -87,9 +87,9 @@ public class Window extends Application {
         });
     }
 
-    public void sendMessage(String message) {
+    public void sendMessage(String messageType, String messageContent) {
         try {
-            socket.getOutputStream().write((message+"\0").getBytes());
+            socket.getOutputStream().write((messageType + messageContent + "\0").getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -115,7 +115,7 @@ public class Window extends Application {
         errorLabel.textProperty().bind(this.errorLabel);
 
         btn.setOnAction(event -> {
-            sendMessage("c" + textFieldInput.get());
+            sendMessage("c", textFieldInput.get());
             this.errorLabel.set("");
         });
 
