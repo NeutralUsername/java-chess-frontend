@@ -58,11 +58,12 @@ public class Window extends Application {
                 if (byt == -1) {
                     return null;
                 }
+                if (byt == 0) {
+                    return message;
+                }
                 message += (char) byt;
 
-            } while (in.available() > 0);
-            return message;
-
+            } while (true);
         } catch (IOException e) {
             return null;
         }
