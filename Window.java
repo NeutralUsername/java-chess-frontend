@@ -89,7 +89,7 @@ public class Window extends Application {
 
     public void sendMessage(String message) {
         try {
-            socket.getOutputStream().write(message.getBytes());
+            socket.getOutputStream().write((message+"\0").getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
