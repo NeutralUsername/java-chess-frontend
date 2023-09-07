@@ -80,6 +80,9 @@ public class Window extends Application {
                     case "e":
                         errorLabel.set(messageContent);
                         break;
+                    case "g":
+                        System.out.println("starting game as " + (messageContent.equals("w") ? "white" : "black"));
+                        break;
                     default:
                         System.out.println("unknown message type: " + messageType);
                 }
