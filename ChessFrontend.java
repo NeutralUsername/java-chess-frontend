@@ -14,12 +14,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class Window extends Application {
+public class ChessFrontend extends Application {
 
     private Socket socket;
     private SimpleStringProperty id = new SimpleStringProperty("");
     private SimpleStringProperty textFieldInput = new SimpleStringProperty("");
     private SimpleStringProperty errorLabel = new SimpleStringProperty("");
+    private Scene currentScene = getHomeScene();
 
     public void initializeConnection() {
         try {
@@ -103,10 +104,11 @@ public class Window extends Application {
         }
     }
 
-    @Override
-    public void start(Stage stage) {
-        stage.setTitle("game");
+    public Scene getGameScene() {
+        return null;
+    }
 
+    public Scene getHomeScene() {
         Label idLabel = new Label();
         idLabel.textProperty().bind(id);
 
@@ -135,8 +137,13 @@ public class Window extends Application {
         root.setCenter(vBox);
         root.setBottom(errorLabel);
 
-        Scene scene = new Scene(root, 300, 250);
-        stage.setScene(scene);
+        return new Scene(root, 300, 250);
+    }
+
+    @Override
+    public void start(Stage stage) {
+        stage.setTitle("chess");
+        stage.setScene(currentScene);
         stage.show();
 
         initializeConnection();
