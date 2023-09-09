@@ -152,7 +152,6 @@ public class ChessFrontend extends Application {
         vBox.setAlignment(Pos.CENTER);
         vBox.getChildren().addAll(idLabel, textField, btn);
 
-        BorderPane.setAlignment(vBox, Pos.CENTER);
         BorderPane.setAlignment(errorLabel, Pos.CENTER);
         root.setCenter(vBox);
         root.setBottom(errorLabel);
