@@ -25,6 +25,7 @@ public class ChessFrontend extends Application {
     private SimpleStringProperty textFieldInput = new SimpleStringProperty("");
     private SimpleStringProperty errorLabel = new SimpleStringProperty("");
     private String chessBoard = "";
+    private int draggingPieceIndex;
     private Boolean isWhite;
 
     public void initializeConnection() {
@@ -130,12 +131,12 @@ public class ChessFrontend extends Application {
                 if (piece.equals(" ") || (isWhite && piece.equals(piece.toLowerCase())) || (!isWhite && piece.equals(piece.toUpperCase()))) {
                     return;
                 }
+                draggingPieceIndex = fieldIndex;
                 label.startFullDrag();
             });
             label.onMouseDragReleasedProperty().set(event -> {
-                int sourceIndex = isWhite ? (63 - GridPane.getRowIndex(label) * 8 - GridPane.getColumnIndex(label)) : (GridPane.getRowIndex(label) * 8 + GridPane.getColumnIndex(label));
-                int targetIndex = isWhite ? (63 - GridPane.getRowIndex((Label) event.getSource()) * 8 - GridPane.getColumnIndex((Label) event.getSource())) : (GridPane.getRowIndex((Label) event.getSource()) * 8 + GridPane.getColumnIndex((Label) event.getSource()));
-                sendMessage("m", sourceIndex + "" + targetIndex);
+              
+                sendMessage("m", draggingPieceIndex + "" + fieldIndex);
             });
             label.onMouseDragEnteredProperty().set(event -> {
                 label.setStyle("-fx-border-color: red;");
