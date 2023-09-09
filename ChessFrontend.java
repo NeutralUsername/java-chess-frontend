@@ -107,13 +107,17 @@ public class ChessFrontend extends Application {
 
     public Scene getGameScene() {
         BorderPane root = new BorderPane();
-        GridPane chessBoard = new GridPane();
-        chessBoard.setAlignment(Pos.CENTER);
-        chessBoard.setHgap(10);
-        chessBoard.setVgap(10);
+        GridPane boardGridPane = new GridPane();
+        Label currentPlayer = new Label("current turn: "+ (chessBoard.substring(0, 1).equals("w") ? "white" : "black"));
+        boardGridPane.setAlignment(Pos.CENTER);
+        currentPlayer.setAlignment(Pos.CENTER);
+        boardGridPane.setHgap(10);
+        boardGridPane.setVgap(10);
 
+        BorderPane.setAlignment(currentPlayer, Pos.CENTER);
 
-        root.setCenter(chessBoard);
+        root.setTop(currentPlayer);
+        root.setCenter(boardGridPane);
         return new Scene(root, 300, 250);
     }
 
@@ -143,6 +147,8 @@ public class ChessFrontend extends Application {
         vBox.setAlignment(Pos.CENTER);
         vBox.getChildren().addAll(idLabel, textField, btn);
 
+        BorderPane.setAlignment(vBox, Pos.CENTER);
+        BorderPane.setAlignment(errorLabel, Pos.CENTER);
         root.setCenter(vBox);
         root.setBottom(errorLabel);
 
