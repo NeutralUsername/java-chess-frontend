@@ -120,8 +120,9 @@ public class ChessFrontend extends Application {
         BorderPane.setAlignment(currentPlayer, Pos.CENTER);
         BorderPane.setAlignment(playerColor, Pos.CENTER);
         for (int i = 0; i < 64; i++) {
-            String piece = chessBoard.substring((63-i) + 1, (63-i) + 2);
+            String piece = chessBoard.substring((isWhite ? (63-i) : i) + 1, (isWhite ? (63-i) : i) + 2);
             Label label = new Label(piece);
+
             label.setMinSize(50, 50);
             label.setMaxSize(50, 50);
             label.setAlignment(Pos.CENTER);
