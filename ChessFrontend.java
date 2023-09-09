@@ -119,11 +119,21 @@ public class ChessFrontend extends Application {
 
         BorderPane.setAlignment(currentPlayer, Pos.CENTER);
         BorderPane.setAlignment(playerColor, Pos.CENTER);
+        for (int i = 0; i < 64; i++) {
+            String piece = chessBoard.substring((63-i) + 1, (63-i) + 2);
+            Label label = new Label(piece);
+            label.setMinSize(50, 50);
+            label.setMaxSize(50, 50);
+            label.setAlignment(Pos.CENTER);
+            label.setStyle("-fx-border-color: black;");
+            boardGridPane.add(label, i % 8, i / 8);
+        }
 
+        boardGridPane.setAlignment(Pos.CENTER);
         root.setTop(currentPlayer);
         root.setCenter(boardGridPane);
         root.setBottom(playerColor);
-        return new Scene(root, 300, 250);
+        return new Scene(root, 600, 600);
     }
 
     public Scene getHomeScene() {
