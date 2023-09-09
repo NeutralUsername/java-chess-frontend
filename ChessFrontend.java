@@ -11,16 +11,17 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class ChessFrontend extends Application {
-
+    private Stage stage;
     private Socket socket;
     private SimpleStringProperty id = new SimpleStringProperty("");
     private SimpleStringProperty textFieldInput = new SimpleStringProperty("");
     private SimpleStringProperty errorLabel = new SimpleStringProperty("");
-    private Scene currentScene = getHomeScene();
+    private String chessBoard = "";
 
     public void initializeConnection() {
         try {
@@ -82,12 +83,12 @@ public class ChessFrontend extends Application {
                         errorLabel.set(messageContent);
                         break;
                     case "b":
-                        System.out.println("starting game as black");
-                        System.out.println(messageContent);
+                        chessBoard = messageContent;
+                        stage.setScene(getGameScene());
                         break;
                     case "w":
-                        System.out.println("starting game as white");
-                        System.out.println(messageContent);
+                        chessBoard = messageContent;
+                        stage.setScene(getHomeScene());
                         break;
                     default:
                         System.out.println("unknown message type: " + messageType);
@@ -105,7 +106,15 @@ public class ChessFrontend extends Application {
     }
 
     public Scene getGameScene() {
-        return null;
+        BorderPane root = new BorderPane();
+        GridPane chessBoard = new GridPane();
+        chessBoard.setAlignment(Pos.CENTER);
+        chessBoard.setHgap(10);
+        chessBoard.setVgap(10);
+
+
+        root.setCenter(chessBoard);
+        return new Scene(root, 300, 250);
     }
 
     public Scene getHomeScene() {
@@ -142,8 +151,9 @@ public class ChessFrontend extends Application {
 
     @Override
     public void start(Stage stage) {
+        this.stage = stage;
         stage.setTitle("chess");
-        stage.setScene(currentScene);
+        stage.setScene(getHomeScene());
         stage.show();
 
         initializeConnection();
