@@ -22,6 +22,7 @@ public class ChessFrontend extends Application {
     private SimpleStringProperty textFieldInput = new SimpleStringProperty("");
     private SimpleStringProperty errorLabel = new SimpleStringProperty("");
     private String chessBoard = "";
+    private Boolean isWhite;
 
     public void initializeConnection() {
         try {
@@ -84,10 +85,12 @@ public class ChessFrontend extends Application {
                         break;
                     case "b":
                         chessBoard = messageContent;
+                        isWhite = false;
                         stage.setScene(getGameScene());
                         break;
                     case "w":
                         chessBoard = messageContent;
+                        isWhite = true;
                         stage.setScene(getGameScene());
                         break;
                     default:
@@ -109,15 +112,17 @@ public class ChessFrontend extends Application {
         BorderPane root = new BorderPane();
         GridPane boardGridPane = new GridPane();
         Label currentPlayer = new Label("current turn: "+ (chessBoard.substring(0, 1).equals("w") ? "white" : "black"));
-        boardGridPane.setAlignment(Pos.CENTER);
-        currentPlayer.setAlignment(Pos.CENTER);
+        Label playerColor  = new Label("your color: "+ (isWhite ? "white" : "black"));
+
         boardGridPane.setHgap(10);
         boardGridPane.setVgap(10);
 
         BorderPane.setAlignment(currentPlayer, Pos.CENTER);
+        BorderPane.setAlignment(playerColor, Pos.CENTER);
 
         root.setTop(currentPlayer);
         root.setCenter(boardGridPane);
+        root.setBottom(playerColor);
         return new Scene(root, 300, 250);
     }
 
