@@ -129,41 +129,43 @@ public class ChessFrontend extends Application {
         boardGridPane.onMouseDragReleasedProperty().set(event -> {
             draggingLabel.setStyle("-fx-border-color: black;");
         });
-        for (int i = 0; i < 64; i++) {
-            int fieldIndex = isWhite ? (63 - i) : i;
-            String piece = chessBoard.substring(fieldIndex + 1, fieldIndex + 2);
-            Label label = new Label(piece);
-            label.onDragDetectedProperty().set(event -> {
-                if (chessBoard.substring(0, 1).equals("w") != isWhite || piece.equals(" ")
-                        || (isWhite && piece.equals(piece.toLowerCase()))
-                        || (!isWhite && piece.equals(piece.toUpperCase()))) {
-                    return;
-                }
-                draggingPieceIndex = fieldIndex;
-                draggingLabel = label;
-                label.startFullDrag();
-                label.setStyle("-fx-border-color: blue;");
-            });
-            label.onMouseDragReleasedProperty().set(event -> {
-                sendMessage("m", draggingPieceIndex + "," + fieldIndex);
-            });
-            label.onMouseDragEnteredProperty().set(event -> {
-                if (draggingPieceIndex == fieldIndex) {
-                    return;
-                }
-                label.setStyle("-fx-border-color: red;");
-            });
-            label.onMouseDragExitedProperty().set(event -> {
-                if (draggingPieceIndex == fieldIndex) {
-                    return;
-                }
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                int fieldIndex = isWhite ? ((7 - i) * 8 + j) : (i * 8 + j);
+                String piece = chessBoard.substring(fieldIndex + 1, fieldIndex + 2);
+                Label label = new Label(piece);
+                label.onDragDetectedProperty().set(event -> {
+                    if (chessBoard.substring(0, 1).equals("w") != isWhite || piece.equals(" ")
+                            || (isWhite && piece.equals(piece.toLowerCase()))
+                            || (!isWhite && piece.equals(piece.toUpperCase()))) {
+                        return;
+                    }
+                    draggingPieceIndex = fieldIndex;
+                    draggingLabel = label;
+                    label.startFullDrag();
+                    label.setStyle("-fx-border-color: blue;");
+                });
+                label.onMouseDragReleasedProperty().set(event -> {
+                    sendMessage("m", draggingPieceIndex + "," + fieldIndex);
+                });
+                label.onMouseDragEnteredProperty().set(event -> {
+                    if (draggingPieceIndex == fieldIndex) {
+                        return;
+                    }
+                    label.setStyle("-fx-border-color: red;");
+                });
+                label.onMouseDragExitedProperty().set(event -> {
+                    if (draggingPieceIndex == fieldIndex) {
+                        return;
+                    }
+                    label.setStyle("-fx-border-color: black;");
+                });
+                label.setMinSize(50, 50);
+                label.setMaxSize(50, 50);
+                label.setAlignment(Pos.CENTER);
                 label.setStyle("-fx-border-color: black;");
-            });
-            label.setMinSize(50, 50);
-            label.setMaxSize(50, 50);
-            label.setAlignment(Pos.CENTER);
-            label.setStyle("-fx-border-color: black;");
-            boardGridPane.add(label, i % 8, i / 8);
+                boardGridPane.add(label, j, i);
+            }
         }
 
         boardGridPane.setAlignment(Pos.CENTER);
