@@ -88,7 +88,7 @@ public class ChessFrontend extends Application {
                         break;
                     case "w":
                         chessBoard = messageContent;
-                        stage.setScene(getHomeScene());
+                        stage.setScene(getGameScene());
                         break;
                     default:
                         System.out.println("unknown message type: " + messageType);
