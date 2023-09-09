@@ -128,14 +128,13 @@ public class ChessFrontend extends Application {
             String piece = chessBoard.substring(fieldIndex+ 1, fieldIndex + 2);
             Label label = new Label(piece);
             label.onDragDetectedProperty().set(event -> {
-                if (piece.equals(" ") || (isWhite && piece.equals(piece.toLowerCase())) || (!isWhite && piece.equals(piece.toUpperCase()))) {
+                if (chessBoard.substring(0, 1).equals("w") != isWhite || piece.equals(" ") || (isWhite && piece.equals(piece.toLowerCase())) || (!isWhite && piece.equals(piece.toUpperCase()))) {
                     return;
                 }
                 draggingPieceIndex = fieldIndex;
                 label.startFullDrag();
             });
             label.onMouseDragReleasedProperty().set(event -> {
-              
                 sendMessage("m", draggingPieceIndex + "" + fieldIndex);
             });
             label.onMouseDragEnteredProperty().set(event -> {
