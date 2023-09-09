@@ -10,6 +10,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.Toolkit;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -120,10 +123,9 @@ public class ChessFrontend extends Application {
         BorderPane.setAlignment(currentPlayer, Pos.CENTER);
         BorderPane.setAlignment(playerColor, Pos.CENTER);
         for (int i = 0; i < 64; i++) {
-            int pieceIndex = isWhite ? (63-i) : i;
-            String piece = chessBoard.substring(pieceIndex+ 1, pieceIndex + 2);
+            int fieldIndex = isWhite ? (63-i) : i;
+            String piece = chessBoard.substring(fieldIndex+ 1, fieldIndex + 2);
             Label label = new Label(piece);
-
             label.setMinSize(50, 50);
             label.setMaxSize(50, 50);
             label.setAlignment(Pos.CENTER);
@@ -141,6 +143,11 @@ public class ChessFrontend extends Application {
     public Scene getHomeScene() {
         Label idLabel = new Label();
         idLabel.textProperty().bind(id);
+        idLabel.onMouseClickedProperty().set(event -> {
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            StringSelection stringSelection = new StringSelection(id.get());
+            clipboard.setContents(stringSelection, null);
+        });
 
         TextField textField = new TextField();
         textField.setMaxWidth(150);
