@@ -26,6 +26,7 @@ public class ChessFrontend extends Application {
     private SimpleStringProperty errorLabel = new SimpleStringProperty("");
     private String chessBoard = "";
     private int draggingPieceIndex;
+    private Label draggingLabel;
     private Boolean isWhite;
 
     public void initializeConnection() {
@@ -123,6 +124,10 @@ public class ChessFrontend extends Application {
 
         BorderPane.setAlignment(currentPlayer, Pos.CENTER);
         BorderPane.setAlignment(playerColor, Pos.CENTER);
+
+        boardGridPane.onMouseDragReleasedProperty().set(event -> {
+            draggingLabel.setStyle("-fx-border-color: black;");
+        });
         for (int i = 0; i < 64; i++) {
             int fieldIndex = isWhite ? (63-i) : i;
             String piece = chessBoard.substring(fieldIndex+ 1, fieldIndex + 2);
@@ -132,15 +137,23 @@ public class ChessFrontend extends Application {
                     return;
                 }
                 draggingPieceIndex = fieldIndex;
+                draggingLabel = label;
                 label.startFullDrag();
+                label.setStyle("-fx-border-color: blue;");
             });
             label.onMouseDragReleasedProperty().set(event -> {
                 sendMessage("m", draggingPieceIndex + "" + fieldIndex);
             });
             label.onMouseDragEnteredProperty().set(event -> {
+                if (draggingPieceIndex == fieldIndex) {
+                    return;
+                }
                 label.setStyle("-fx-border-color: red;");
             });
             label.onMouseDragExitedProperty().set(event -> {
+                 if (draggingPieceIndex == fieldIndex) {
+                    return;
+                }
                 label.setStyle("-fx-border-color: black;");
             });
             label.setMinSize(50, 50);
