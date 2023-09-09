@@ -126,6 +126,23 @@ public class ChessFrontend extends Application {
             int fieldIndex = isWhite ? (63-i) : i;
             String piece = chessBoard.substring(fieldIndex+ 1, fieldIndex + 2);
             Label label = new Label(piece);
+            label.onDragDetectedProperty().set(event -> {
+                if (piece.equals(" ") || (isWhite && piece.equals(piece.toLowerCase())) || (!isWhite && piece.equals(piece.toUpperCase()))) {
+                    return;
+                }
+                label.startFullDrag();
+            });
+            label.onMouseDragReleasedProperty().set(event -> {
+                int sourceIndex = isWhite ? (63 - GridPane.getRowIndex(label) * 8 - GridPane.getColumnIndex(label)) : (GridPane.getRowIndex(label) * 8 + GridPane.getColumnIndex(label));
+                int targetIndex = isWhite ? (63 - GridPane.getRowIndex((Label) event.getSource()) * 8 - GridPane.getColumnIndex((Label) event.getSource())) : (GridPane.getRowIndex((Label) event.getSource()) * 8 + GridPane.getColumnIndex((Label) event.getSource()));
+                sendMessage("m", sourceIndex + "" + targetIndex);
+            });
+            label.onMouseDragEnteredProperty().set(event -> {
+                label.setStyle("-fx-border-color: red;");
+            });
+            label.onMouseDragExitedProperty().set(event -> {
+                label.setStyle("-fx-border-color: black;");
+            });
             label.setMinSize(50, 50);
             label.setMaxSize(50, 50);
             label.setAlignment(Pos.CENTER);
