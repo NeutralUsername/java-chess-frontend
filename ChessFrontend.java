@@ -142,7 +142,7 @@ public class ChessFrontend extends Application {
                 label.setStyle("-fx-border-color: blue;");
             });
             label.onMouseDragReleasedProperty().set(event -> {
-                sendMessage("m", draggingPieceIndex + "" + fieldIndex);
+                sendMessage("m", draggingPieceIndex + "," + fieldIndex);
             });
             label.onMouseDragEnteredProperty().set(event -> {
                 if (draggingPieceIndex == fieldIndex) {
