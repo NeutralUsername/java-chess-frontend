@@ -116,8 +116,9 @@ public class ChessFrontend extends Application {
     public Scene getGameScene() {
         BorderPane root = new BorderPane();
         GridPane boardGridPane = new GridPane();
-        Label currentPlayer = new Label("current turn: "+ (chessBoard.substring(0, 1).equals("w") ? "white" : "black"));
-        Label playerColor  = new Label("your color: "+ (isWhite ? "white" : "black"));
+        Label currentPlayer = new Label(
+                "current turn: " + (chessBoard.substring(0, 1).equals("w") ? "white" : "black"));
+        Label playerColor = new Label("your color: " + (isWhite ? "white" : "black"));
 
         boardGridPane.setHgap(10);
         boardGridPane.setVgap(10);
@@ -129,11 +130,13 @@ public class ChessFrontend extends Application {
             draggingLabel.setStyle("-fx-border-color: black;");
         });
         for (int i = 0; i < 64; i++) {
-            int fieldIndex = isWhite ? (63-i) : i;
-            String piece = chessBoard.substring(fieldIndex+ 1, fieldIndex + 2);
+            int fieldIndex = isWhite ? (63 - i) : i;
+            String piece = chessBoard.substring(fieldIndex + 1, fieldIndex + 2);
             Label label = new Label(piece);
             label.onDragDetectedProperty().set(event -> {
-                if (chessBoard.substring(0, 1).equals("w") != isWhite || piece.equals(" ") || (isWhite && piece.equals(piece.toLowerCase())) || (!isWhite && piece.equals(piece.toUpperCase()))) {
+                if (chessBoard.substring(0, 1).equals("w") != isWhite || piece.equals(" ")
+                        || (isWhite && piece.equals(piece.toLowerCase()))
+                        || (!isWhite && piece.equals(piece.toUpperCase()))) {
                     return;
                 }
                 draggingPieceIndex = fieldIndex;
@@ -151,7 +154,7 @@ public class ChessFrontend extends Application {
                 label.setStyle("-fx-border-color: red;");
             });
             label.onMouseDragExitedProperty().set(event -> {
-                 if (draggingPieceIndex == fieldIndex) {
+                if (draggingPieceIndex == fieldIndex) {
                     return;
                 }
                 label.setStyle("-fx-border-color: black;");
