@@ -98,6 +98,9 @@ public class ChessFrontend extends Application {
                         isWhite = true;
                         stage.setScene(getGameScene());
                         break;
+                    case "x":
+                        stage.setScene(getHomeScene());
+                        break;
                     default:
                         System.out.println("unknown message type: " + messageType);
                 }
@@ -115,17 +118,25 @@ public class ChessFrontend extends Application {
 
     public Scene getGameScene() {
         BorderPane root = new BorderPane();
-        GridPane boardGridPane = new GridPane();
         Label currentPlayer = new Label(
                 "current turn: " + (chessBoard.substring(0, 1).equals("w") ? "white" : "black"));
         Label playerColor = new Label("your color: " + (isWhite ? "white" : "black"));
+        Button exitButton = new Button("exit");
+        exitButton.setOnAction(event -> {
+            sendMessage("x", "");
+        });
 
-        boardGridPane.setHgap(10);
-        boardGridPane.setVgap(10);
+        VBox vBox = new VBox(10);
+        vBox.setAlignment(Pos.CENTER);
+        vBox.getChildren().add(playerColor);
+        vBox.getChildren().add(exitButton);
 
         BorderPane.setAlignment(currentPlayer, Pos.CENTER);
         BorderPane.setAlignment(playerColor, Pos.CENTER);
 
+        GridPane boardGridPane = new GridPane();
+        boardGridPane.setHgap(10);
+        boardGridPane.setVgap(10);
         boardGridPane.onMouseDragReleasedProperty().set(event -> {
             draggingLabel.setStyle("-fx-border-color: black;");
         });
@@ -171,7 +182,7 @@ public class ChessFrontend extends Application {
         boardGridPane.setAlignment(Pos.CENTER);
         root.setTop(currentPlayer);
         root.setCenter(boardGridPane);
-        root.setBottom(playerColor);
+        root.setBottom(vBox);
         return new Scene(root, 600, 600);
     }
 
