@@ -51,7 +51,6 @@ public class ChessFrontend extends Application {
                     }
                     handleMessage(message.substring(0, 1), message.substring(1));
                 }
-                System.out.println("connection closed");
                 Platform.exit();
             }
         }).start();
