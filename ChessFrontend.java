@@ -73,14 +73,14 @@ public class ChessFrontend extends Application {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                updateTimer();
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                while(!socket.isClosed()) {
+                    updateTimer();
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
-                if (!socket.isClosed())
-                    timerLoop();
             }
         }).start();
     }
