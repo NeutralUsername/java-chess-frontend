@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -17,6 +18,7 @@ import java.awt.Toolkit;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -173,20 +175,12 @@ public class ChessFrontend extends Application {
     public Scene getGameScene() {
         BorderPane root = new BorderPane();
 
-        Label timerWhiteLabel = new Label();
-        Label timerBlackLabel = new Label();
-        timerWhiteLabel.textProperty().bind(timerWhite.divide(1000).asString());
-        timerBlackLabel.textProperty().bind(timerBlack.divide(1000).asString());
-        timerWhiteLabel.setMinWidth(100);
-        timerBlackLabel.setMinWidth(100);
-
         GridPane boardGridPane = new GridPane();
         boardGridPane.setHgap(10);
         boardGridPane.setVgap(10);
         boardGridPane.onMouseDragReleasedProperty().set(event -> {
             draggingLabel.setStyle("-fx-border-color: black;");
         });
-
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 int fieldIndex = isWhite ? ((7 - i) * 8 + j) : (i * 8 + j);
@@ -226,29 +220,40 @@ public class ChessFrontend extends Application {
             }
         }
 
-        Label playerColor = new Label("your color: " + (isWhite ? "white" : "black"));
+        Label currentPlayer = new Label(
+                "current turn: " + (isWhiteTurn ? "white" : "black"));
+        BorderPane.setAlignment(currentPlayer, Pos.CENTER);
+
+        Label timerWhiteLabel = new Label();
+        timerWhiteLabel.textProperty().bind(timerWhite.divide(1000).asString());
+        HBox timerWhiteBox = new HBox(10);
+        timerWhiteBox.getChildren().addAll(new Label("white:"), timerWhiteLabel);
+
+        Label timerBlackLabel = new Label();
+        timerBlackLabel.textProperty().bind(timerBlack.divide(1000).asString());
+        HBox timerBlackBox = new HBox(10);
+        timerBlackBox.getChildren().addAll(new Label("black:"), timerBlackLabel);
+
+        HBox timerBox = new HBox(10);
+        timerBox.getChildren().addAll(timerWhiteBox, timerBlackBox);
+        timerBox.setAlignment(Pos.CENTER);
+        timerBox.setSpacing(50);
+
         Button exitButton = new Button("exit");
         exitButton.setOnAction(event -> {
             sendMessage("x", "");
         });
-        VBox vBox = new VBox(10);
-        vBox.setAlignment(Pos.CENTER);
-        vBox.getChildren().add(playerColor);
-        vBox.getChildren().add(exitButton);
-        vBox.setAlignment(Pos.CENTER);
-        Label currentPlayer = new Label(
-                "current turn: " + (isWhiteTurn ? "white" : "black"));
-        BorderPane.setAlignment(currentPlayer, Pos.CENTER);
-        BorderPane.setAlignment(playerColor, Pos.CENTER);
 
-        HBox hBox = new HBox(10);
-        hBox.setAlignment(Pos.CENTER);
-        hBox.getChildren().addAll(timerWhiteLabel, vBox, timerBlackLabel);
+        VBox vBox = new VBox(10);
+        vBox.getChildren().addAll(timerBox, new Label("your color: " + (isWhite ? "white" : "black")), exitButton);
+        vBox.setAlignment(Pos.CENTER);
+
+        root.setBottom(vBox);
+        root.setPadding(new Insets(10));
 
         boardGridPane.setAlignment(Pos.CENTER);
         root.setTop(currentPlayer);
         root.setCenter(boardGridPane);
-        root.setBottom(hBox);
         return new Scene(root, 600, 600);
     }
 
