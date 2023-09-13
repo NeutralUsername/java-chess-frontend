@@ -4,6 +4,7 @@ import java.net.Socket;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -15,19 +16,26 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.Toolkit;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class ChessFrontend extends Application {
     private Stage stage;
     private Socket socket;
+
     private SimpleStringProperty id = new SimpleStringProperty("");
     private SimpleStringProperty textFieldInput = new SimpleStringProperty("");
     private SimpleStringProperty errorLabel = new SimpleStringProperty("");
-    private String chessBoard = "";
     private int draggingPieceIndex;
     private Label draggingLabel;
-    private Boolean isWhite;
+
+    private String chessBoard = "";
+    private boolean isWhite;
+    private boolean isWhiteTurn;
+    private SimpleLongProperty timerWhite = new SimpleLongProperty(0L);
+    private SimpleLongProperty timerBlack = new SimpleLongProperty(0L);
+    private long lastTimerUpdate;
 
     public void initializeConnection() {
         try {
@@ -38,6 +46,42 @@ public class ChessFrontend extends Application {
             System.out.println("connection failed");
             Platform.exit();
         }
+    }
+
+    public void updateTimer() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if (isWhiteTurn) {
+                    long newTime = timerWhite.get() - (System.currentTimeMillis() - lastTimerUpdate);
+                    if (newTime >= 0) {
+                        timerWhite.set(timerWhite.get() - (System.currentTimeMillis() - lastTimerUpdate));
+                    }
+                } else {
+                    long newTime = timerBlack.get() - (System.currentTimeMillis() - lastTimerUpdate);
+                    if (newTime >= 0) {
+                        timerBlack.set(timerBlack.get() - (System.currentTimeMillis() - lastTimerUpdate));
+                    }
+                }
+                lastTimerUpdate = System.currentTimeMillis();
+            }
+        });
+    }
+
+    public void timerLoop() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                updateTimer();
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (!socket.isClosed())
+                    timerLoop();
+            }
+        }).start();
     }
 
     public void listenForMessages() {
@@ -88,13 +132,24 @@ public class ChessFrontend extends Application {
                         errorLabel.set(messageContent);
                         break;
                     case "b":
-                        chessBoard = messageContent;
+                        String[] splitB = messageContent.split(",");
+                        isWhiteTurn = splitB[0].equals("w");
+                        chessBoard = splitB[3];
                         isWhite = false;
+                        timerWhite.set(Long.parseLong(splitB[1]));
+                        timerBlack.set(Long.parseLong(splitB[2]));
+                        lastTimerUpdate = System.currentTimeMillis();
+
                         stage.setScene(getGameScene());
                         break;
                     case "w":
-                        chessBoard = messageContent;
+                        String[] splitW = messageContent.split(",");
+                        isWhiteTurn = splitW[0].equals("w");
+                        chessBoard = splitW[3];
                         isWhite = true;
+                        timerWhite.set(Long.parseLong(splitW[1]));
+                        timerBlack.set(Long.parseLong(splitW[2]));
+                        lastTimerUpdate = System.currentTimeMillis();
                         stage.setScene(getGameScene());
                         break;
                     case "x":
@@ -117,21 +172,13 @@ public class ChessFrontend extends Application {
 
     public Scene getGameScene() {
         BorderPane root = new BorderPane();
-        Label currentPlayer = new Label(
-                "current turn: " + (chessBoard.substring(0, 1).equals("w") ? "white" : "black"));
-        Label playerColor = new Label("your color: " + (isWhite ? "white" : "black"));
-        Button exitButton = new Button("exit");
-        exitButton.setOnAction(event -> {
-            sendMessage("x", "");
-        });
 
-        VBox vBox = new VBox(10);
-        vBox.setAlignment(Pos.CENTER);
-        vBox.getChildren().add(playerColor);
-        vBox.getChildren().add(exitButton);
-
-        BorderPane.setAlignment(currentPlayer, Pos.CENTER);
-        BorderPane.setAlignment(playerColor, Pos.CENTER);
+        Label timerWhiteLabel = new Label();
+        Label timerBlackLabel = new Label();
+        timerWhiteLabel.textProperty().bind(timerWhite.divide(1000).asString());
+        timerBlackLabel.textProperty().bind(timerBlack.divide(1000).asString());
+        timerWhiteLabel.setMinWidth(100);
+        timerBlackLabel.setMinWidth(100);
 
         GridPane boardGridPane = new GridPane();
         boardGridPane.setHgap(10);
@@ -139,13 +186,14 @@ public class ChessFrontend extends Application {
         boardGridPane.onMouseDragReleasedProperty().set(event -> {
             draggingLabel.setStyle("-fx-border-color: black;");
         });
+
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 int fieldIndex = isWhite ? ((7 - i) * 8 + j) : (i * 8 + j);
-                String piece = chessBoard.substring(fieldIndex + 1, fieldIndex + 2);
+                String piece = chessBoard.substring(fieldIndex, fieldIndex + 1);
                 Label label = new Label(piece);
                 label.onDragDetectedProperty().set(event -> {
-                    if (chessBoard.substring(0, 1).equals("w") != isWhite || piece.equals(" ")
+                    if (isWhite != isWhiteTurn || piece.equals(" ")
                             || (isWhite && piece.equals(piece.toLowerCase()))
                             || (!isWhite && piece.equals(piece.toUpperCase()))) {
                         return;
@@ -178,10 +226,29 @@ public class ChessFrontend extends Application {
             }
         }
 
+        Label playerColor = new Label("your color: " + (isWhite ? "white" : "black"));
+        Button exitButton = new Button("exit");
+        exitButton.setOnAction(event -> {
+            sendMessage("x", "");
+        });
+        VBox vBox = new VBox(10);
+        vBox.setAlignment(Pos.CENTER);
+        vBox.getChildren().add(playerColor);
+        vBox.getChildren().add(exitButton);
+        vBox.setAlignment(Pos.CENTER);
+        Label currentPlayer = new Label(
+                "current turn: " + (isWhiteTurn ? "white" : "black"));
+        BorderPane.setAlignment(currentPlayer, Pos.CENTER);
+        BorderPane.setAlignment(playerColor, Pos.CENTER);
+
+        HBox hBox = new HBox(10);
+        hBox.setAlignment(Pos.CENTER);
+        hBox.getChildren().addAll(timerWhiteLabel, vBox, timerBlackLabel);
+
         boardGridPane.setAlignment(Pos.CENTER);
         root.setTop(currentPlayer);
         root.setCenter(boardGridPane);
-        root.setBottom(vBox);
+        root.setBottom(hBox);
         return new Scene(root, 600, 600);
     }
 
@@ -231,6 +298,7 @@ public class ChessFrontend extends Application {
         stage.show();
 
         initializeConnection();
+        timerLoop();
     }
 
     @Override
